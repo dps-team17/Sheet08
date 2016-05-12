@@ -1,0 +1,39 @@
+package team17.sheet08;
+
+public class Demo1 {
+
+    public static void main(String[] args) {
+
+        int m = 5;
+        int size = (int) Math.pow(2, m);
+
+        NetworkInfo net = new NetworkInfo(m);
+        INode[] nodes = new INode[size];
+
+        nodes[1] = new Node(1, net);
+        nodes[3] = new Node(3, net);
+        nodes[7] = new Node(7, net);
+        nodes[8] = new Node(8, net);
+        nodes[12] = new Node(12, net);
+        nodes[15] = new Node(15, net);
+        nodes[19] = new Node(19, net);
+        nodes[25] = new Node(25, net);
+        nodes[27] = new Node(27, net);
+        nodes[21] = new Node(21, net);
+        nodes[0] = new Node(0, net);
+        nodes[31] = new Node(31, net);
+
+        for (int i = 2; i < size; i++) {
+            if (nodes[i] != null)
+                nodes[i].join(nodes[1]);
+        }
+        nodes[0].join(nodes[1]);
+
+        for (INode n : nodes) {
+            if (n != null)
+                n.printTable();
+        }
+
+        //nodes[25].sendMessage(8, null);
+    }
+}

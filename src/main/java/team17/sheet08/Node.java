@@ -19,10 +19,16 @@ public class Node implements INode {
     @Override
     public void sendMessage(int targetId, IMessage msg) {
 
+        if(targetId == nodeId) {
+            this.receive(msg);
+            return;
+        }
+
+        fingers.get(targetId).receive(msg);
     }
 
     @Override
-    public void sendMessage(IMessage msg) {
+    public void sendBroadcast(IMessage msg) {
         fingers.getSuccessor().receive(msg);
     }
 
@@ -32,7 +38,22 @@ public class Node implements INode {
         if(msg instanceof JoinMessage){
             handleJoinMessage((JoinMessage) msg);
         }
+        else if(msg instanceof TextMessage){
+            handleTextMessage((TextMessage) msg);
+        }
+    }
 
+    private void handleTextMessage(TextMessage msg) {
+
+        if(msg.getRecipient() == nodeId){
+            System.out.printf("Node %2d: Received: %s\n", nodeId, msg.getMsg());
+            return;
+        }
+
+        int ndx = fingers.get(msg.getRecipient()).getId();
+        System.out.printf("Node %2d: Forwarding message to %2d\n", nodeId, ndx);
+
+        sendMessage(msg.getRecipient(), msg);
     }
 
     private void handleJoinMessage(JoinMessage msg){
@@ -46,7 +67,7 @@ public class Node implements INode {
 
         updatePredeccessor(msg.getJoined());
 
-        sendMessage(msg);
+        sendBroadcast(msg);
     }
 
     private void updatePredeccessor(INode newNode) {
@@ -86,7 +107,7 @@ public class Node implements INode {
 
         // Send join message
         JoinMessage msg = new JoinMessage(this);
-        sendMessage(msg);
+        sendBroadcast(msg);
     }
 
     @Override

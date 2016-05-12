@@ -19,21 +19,23 @@ public class Demo1 {
         nodes[19] = new Node(19, net);
         nodes[25] = new Node(25, net);
         nodes[27] = new Node(27, net);
-        nodes[21] = new Node(21, net);
-        nodes[0] = new Node(0, net);
-        nodes[31] = new Node(31, net);
+        //nodes[21] = new Node(21, net);
+        //nodes[0] = new Node(0, net);
+        //nodes[31] = new Node(31, net);
 
         for (int i = 2; i < size; i++) {
             if (nodes[i] != null)
                 nodes[i].join(nodes[1]);
         }
-        nodes[0].join(nodes[1]);
 
         for (INode n : nodes) {
             if (n != null)
                 n.printTable();
         }
 
-        //nodes[25].sendMessage(8, null);
+        int sender = 25;
+        int receiver = 19;
+        System.out.printf("\nSending message form %d to %d...\n", sender, receiver);
+        nodes[sender].sendMessage(receiver, new TextMessage(receiver, "Hello!"));
     }
 }

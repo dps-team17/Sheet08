@@ -26,12 +26,14 @@ public class FingerTable {
         return fingers[ndx];
     }
 
-    private int getEntryIndex(int id) {
+    public int getEntryIndex(int id) {
         int ownId = parent.getId();
         int otherId = id;
 
         // Check self reference
-        if (ownId == otherId) throw new InvalidParameterException("Do not have a reference to myself");
+        if (ownId == otherId) {
+            throw new InvalidParameterException("Do not have a reference to myself");
+        }
 
         // Check overflow
         otherId = ownId > otherId ? otherId + (int) Math.pow(2, fingers.length) : otherId;

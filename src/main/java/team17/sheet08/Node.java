@@ -1,19 +1,26 @@
 package team17.sheet08;
 
 
-public class Node implements INode {
+import java.io.IOException;
+import java.rmi.MarshalledObject;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Node<T> implements IDHTNode {
 
     private int nodeId;
     private FingerTable fingers;
     private INode predecessor;
     private NetworkInfo networkInfo;
-
+    private Map<Object, MarshalledObject<T>> data;
     public Node(int id, NetworkInfo net){
 
         networkInfo = net;
         nodeId = id;
         fingers = new FingerTable(this, net.getExponent());
         predecessor = this;
+
+        data = new HashMap<>();
     }
 
     @Override
@@ -41,6 +48,21 @@ public class Node implements INode {
         else if(msg instanceof TextMessage){
             handleTextMessage((TextMessage) msg);
         }
+        else if(msg instanceof DiagnosticMessage) {
+            handleDiagnosticMessage((DiagnosticMessage) msg);
+        }
+    }
+
+    private void handleDiagnosticMessage(DiagnosticMessage msg) {
+        int offPredecessor = networkInfo.getOffset(predecessor.getId(), nodeId);
+        int offTarget = networkInfo.getOffset(msg.getRecipient(), nodeId);
+
+        if(msg.getRecipient() == nodeId || offTarget < offPredecessor) {
+            DiagnosticMessage.addMessage(msg);
+            return;
+        }
+        msg.increaseHops();
+        sendMessage(msg.getRecipient(), msg);
     }
 
     private void handleTextMessage(TextMessage msg) {
@@ -50,8 +72,9 @@ public class Node implements INode {
             return;
         }
 
-        int ndx = fingers.get(msg.getRecipient()).getId();
-        System.out.printf("Node %2d: Forwarding message to %2d\n", nodeId, ndx);
+        int ndx = fingers.getEntryIndex(msg.getRecipient());
+        int succ = fingers.get(msg.getRecipient()).getId();
+        System.out.printf("Node %2d: Forwarding message over finger %d to %2d\n", nodeId, ndx, succ);
 
         sendMessage(msg.getRecipient(), msg);
     }
@@ -59,7 +82,7 @@ public class Node implements INode {
     private void handleJoinMessage(JoinMessage msg){
 
         if(msg.getJoined() == this) {
-            System.out.println("Node " + nodeId + " joined");
+            //System.out.println("Node " + nodeId + " joined");
             return;
         }
 
@@ -135,4 +158,42 @@ public class Node implements INode {
         return "Node " + nodeId;
     }
 
+
+    @Override
+    public MarshalledObject put(Object key, MarshalledObject value) {
+        MarshalledObject<T> result =  data.put(key, value);
+
+        if( result == null){
+            try {
+                result = new MarshalledObject<T>(null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public MarshalledObject get(Object key) {
+        MarshalledObject<T> result = data.get(key);
+
+        try {
+            result =  result == null? new MarshalledObject<T>(null) : result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean contains(Object key) {
+        return data.containsKey(key);
+    }
+
+    @Override
+    public MarshalledObject remove(Object key) {
+        return data.remove(key);
+    }
 }

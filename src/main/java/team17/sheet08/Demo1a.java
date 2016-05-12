@@ -1,6 +1,6 @@
 package team17.sheet08;
 
-public class Demo1 {
+public class Demo1a {
 
     public static void main(String[] args) {
 

@@ -1,12 +1,12 @@
-## Sheet08
+# Sheet08
 
 Distributed Systems Lab 
 
 The goal of this lab assignment is to implement a DHT based on Chord. To simplify the task, the actual communication  may  just be  simulated  within  a  single  JVM – hence  no  real  network communication has to be involved. This should also provide you an idea how to implement a network simulator you might need for conducting experiments / research. NOTE: read the whole assignment first and plan for the following steps before starting with the implementation  of 1a).  This  could  save  some  time  especially  when  extending  the  chord implementation to realize a hash table.
 
-# Assignments:
+## Assignments:
 
-# 1. Chord Implementation
+## 1. Chord Implementation
 Implement a class representing a Chord node. The class should implement an interface, which summarizes the methods offered to other peers (just like a remote interface). Allow multiple instances of the class to be present within the same JVM. The ID of the represented node should be passed to the constructor and a method “connect(...)” should allow the node to join a “local, simulated” network. Leaving / failing nodes do not have to be supported (hence, no periodic updates necessary).
 
 a.
@@ -18,7 +18,7 @@ Demonstrate the proper operation of your network by simulating an example Chord 
 c.
 Simulate a network m=12 (4096 addresses) containing 100 randomly distributed nodes. Let each node send a message to each other node and record the number of hops for delivering the message. What is the min / average /maximum number of nodes passed for delivering a message? How would this value change if you use 500 nodes (no actual experiment required)?
 
-# 2. DHT Implementation
+## 2. DHT Implementation
 The Chord node implementation should be extended to store key – value pairs. The key type should (actually has to) be the same as for the ID of the peer nodes. Value should be instances of the MarshalledObject class. This class allows wrapping any serializable data object, thereby avoiding the expensive serialization / deserialization and dynamic code loading when shipping instances between JVMs.
 
 a.
